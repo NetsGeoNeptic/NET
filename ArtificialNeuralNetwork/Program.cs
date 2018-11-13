@@ -14,7 +14,7 @@ namespace ArtificialNeuralNetwork
         bool _flag = true;
         private List<Pattern> _patternList = new List<Pattern>();
         private Random randObj;
-        private readonly int[] _layer = {16,96,24};//каждый элемент это слой, каждое значение количество нейронов 
+        private readonly int[] _layer = { 16, 96, 24 };//каждый элемент это слой, каждое значение количество нейронов 
 
         static void Main(string[] args)
         {
@@ -39,7 +39,7 @@ namespace ArtificialNeuralNetwork
                 trainNet(_patterns); // тренеровка сети основанная на всех вариантах
                 //Console.WriteLine("Error = " + cheakNet(_patternList, _neo));
             } while (_neo.error != 0);
-            
+
             //do
             //{
             //    teachNet(_patterns, _neo); // тренеровка сети основанная на всех вариантах
@@ -118,7 +118,7 @@ namespace ArtificialNeuralNetwork
             if (System.IO.File.Exists(@"D:\note.xml"))
             {
                 XmlSerializer formatter = new XmlSerializer(typeof(Network));
-                
+
                 using (System.IO.FileStream fs = new System.IO.FileStream(@"D:\note.xml", System.IO.FileMode.OpenOrCreate))
                 {
                     Network newNetwork = (Network)formatter.Deserialize(fs);
@@ -276,7 +276,7 @@ namespace ArtificialNeuralNetwork
                 tempAccuracy = 100.0d - ((tempAccuracy / output.Length) * 100);
                 accuracy += tempAccuracy;
             }
-            return (double)(accuracy /100.0d);
+            return (double)(accuracy / 100.0d);
         }
 
         //метод создания из boolean цифру true==1, false==0
@@ -291,18 +291,18 @@ namespace ArtificialNeuralNetwork
                 return 0;
             }
         }
-        
+
         private bool LearnNet()
         {
-            int[] field = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};// 4x4
-            int[] answer = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};// 4x4
+            int[] field = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };// 4x4
+            int[] answer = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };// 4x4
 
-            for (int i = 0; i < field.Length;i++)
+            for (int i = 0; i < field.Length; i++)
             {
-                field[i] = Rand(0,1);
+                field[i] = Rand(0, 1);
                 //Console.WriteLine(" " + field[i]);
             }
-            
+
             if (!cheakField_4x4(field))
             {
                 //LearnNet();
@@ -310,7 +310,7 @@ namespace ArtificialNeuralNetwork
             }
 
             _flag = !_flag;
-            if (!opportunity_4x4(field,answer)) // сделано чтобы поля без ответа приходили не чаще чем 1 за 2 прохода
+            if (!opportunity_4x4(field, answer)) // сделано чтобы поля без ответа приходили не чаще чем 1 за 2 прохода
             {
                 if (_flag)
                 {
@@ -366,18 +366,18 @@ namespace ArtificialNeuralNetwork
         private bool swap(int[] field, int first, int second)
         {
             bool cheak = false;
-            int buf = 0;            
+            int buf = 0;
             buf = field[first];
             field[first] = field[second];
             field[second] = buf;
-            
+
             if (!cheakField_4x4(field)) cheak = true;
-            
+
             buf = field[first];
             field[first] = field[second];
             field[second] = buf;
-            
-            return cheak;        
+
+            return cheak;
         }
 
         //проверка на 3 в ряд (4x4)
@@ -415,45 +415,24 @@ namespace ArtificialNeuralNetwork
             return finalX;
         }
 
-	    private void trainNet(Pattern[] patterns)
-	    {
+        private void trainNet(Pattern[] patterns)
+        {
             double[] inputs = new double[patterns[0].actualInputs.Length];// double 4x4
             double[] output = new double[patterns[0].actualOutput.Length];// выходные сигналы сигналы
             var count = 0;
             var max = 100;
-            var errors = 0;            
+            var errors = 0;
             for (int i = 0; i < max; i++)
             {
-                for (int j = 0; j < patterns.Length; j++) 
+                System.Diagnostics.Stopwatch sw = new Stopwatch(); // time ---------------------------------
+                sw.Start(); // time ------------------------------------------------------------------------
+
+                for (int j = 0; j < patterns.Length; j++)
                 {
-                    //tempError = 0;
-                    //Array.Clear(inputs, 0, inputs.Length);
-                    //Array.Clear(output, 0, output.Length);
-                    //for (var p = 0; p < inputs.Length; ++p)
-                    //{
-                    //    inputs[p] = patterns[j].actualInputs[p];
-                    //}
-                    //_neo.RunNet(inputs);//получаем результат
-                    //_neo.GetNetAnswer(output);// получаем выходные сигналы сигналы нейросети
-
-                    //for (int ind = 0; ind < output.Length; ++ind)
-                    //{
-                    //    double tempAccuracy = Math.Abs(patterns[j].actualOutput[ind] - output[ind]);
-                    //    if (tempAccuracy > 0.49d)
-                    //    {
-                    //        ++tempError;
-                    //    }
-                    //}
-
-                    //if (tempError == 0)
-                    //{
-                    //    continue;
-                    //}
-
                     _neo.TrainNet(patterns[j].actualInputs, patterns[j].actualOutput);
                 }
-                
-                if ( i % (max/100) == 0)
+
+                if (i % (max / 100) == 0)
                 {
                     count++;
                     Console.SetCursorPosition(0, Console.CursorTop);
@@ -467,10 +446,15 @@ namespace ArtificialNeuralNetwork
                         SaveNet(_neo); //сохраним нейросеть
                     }
                 }
-            }
-	    }//end trainNet
 
-        private double rand(double minX,double maxX)
+                sw.Stop();// time ----------------------------------------------------------------------------
+                Console.ForegroundColor = ConsoleColor.DarkGreen; // устанавливаем цвет
+                Console.WriteLine(" Iteration completed: {0}", (sw.ElapsedMilliseconds / 1000.0).ToString());
+                Console.ResetColor();
+            }
+        }//end trainNet
+
+        private double rand(double minX, double maxX)
         {
             double finalX = RandomProvider.GetThreadRandom().NextDouble() * (maxX - minX) + minX;
             return finalX;
@@ -482,7 +466,7 @@ namespace ArtificialNeuralNetwork
         /// </summary>
         /// <param name="patterns">Патерны с вопросами и ответами</param>
         private void teachNet(Pattern[] patterns, Network net)
-        {            
+        {
             //double[] inputs = new double[patterns[0].actualInputs.Length];// double 4x4
             //double[] output = new double[patterns[0].actualOutput.Length];// выходные сигналы сигналы нейросети
             double[] inputs = new double[16];
@@ -519,7 +503,7 @@ namespace ArtificialNeuralNetwork
                 }
                 net.Eta = 0.01d;
                 Console.SetCursorPosition(0, Console.CursorTop);
-                Console.Write("Complate "+(n*100)/(patterns.Length)+ " %     "+n+"          ");
+                Console.Write("Complate " + (n * 100) / (patterns.Length) + " %     " + n + "          ");
             }
         }
     }
