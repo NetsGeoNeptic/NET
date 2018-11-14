@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Layer.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="Parralel\ParralelRunNet.cs" />
     <Compile Include="Pattern.cs" />
     <Compile Include="Perzeptron.cs" />
     <Compile Include="Program.cs" />
