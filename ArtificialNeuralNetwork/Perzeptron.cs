@@ -54,7 +54,7 @@ namespace ArtificialNeuralNetwork
          */
         public void ClearChange()
         {
-            extraWeight = rand();
+            extraWeight = rand(-0.025, 0.025);
             for (int i = 0; i < changeSignal.Length; i++)
             {
                 changeSignal[i] = 0;
@@ -73,10 +73,10 @@ namespace ArtificialNeuralNetwork
         /**
          * @return возвращает случайное значение от -0.25 до 0.25 
          */
-        private double rand()
+        private double rand(double minX = -0.25D, double maxX = 0.25D)
         {
-            double minX = -0.25D;
-            double maxX = 0.25D;
+            //double minX = -0.25D;
+            //double maxX = 0.25D;
             double finalX = RandomProvider.GetThreadRandom().NextDouble() * (maxX - minX) + minX;
             //Console.Write(String.Format(" {0:0.###} ", finalX));
             return finalX;

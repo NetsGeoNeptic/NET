@@ -7,8 +7,8 @@ namespace ArtificialNeuralNetwork
     public class Network
     {
         public double Eta = 0.01d;
-        private double wsMax = 10.5d; // максимальный вес
-        private double wsMin = -10.5d; // минимальный вес
+        private double wsMax = 5.6d; // максимальный вес
+        private double wsMin = -5.6d; // минимальный вес
 
         // Сумма ответов сети
         //--------------------

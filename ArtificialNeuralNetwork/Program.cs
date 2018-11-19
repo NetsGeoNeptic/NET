@@ -14,7 +14,7 @@ namespace ArtificialNeuralNetwork
         bool _flag = true;
         private List<Pattern> _patternList = new List<Pattern>();
         private Random randObj;
-        private readonly int[] _layer = { 16, 96, 24 };//каждый элемент это слой, каждое значение количество нейронов 
+        private readonly int[] _layer = { 16, 132, 24 };//каждый элемент это слой, каждое значение количество нейронов 
 
         static void Main(string[] args)
         {
@@ -36,7 +36,8 @@ namespace ArtificialNeuralNetwork
 
             do
             {
-                trainNet(_patterns); // тренеровка сети основанная на всех вариантах
+                //trainNet(_patterns); // тренеровка сети основанная на всех вариантах
+                teachNet(_patterns,_neo); // альтернавивный вариант обучения
                 //Console.WriteLine("Error = " + cheakNet(_patternList, _neo));
             } while (_neo.error != 0);
 
@@ -195,7 +196,7 @@ namespace ArtificialNeuralNetwork
                 for (int i = 0; i < output.Length; ++i)
                 {
                     double tempAccuracy = Math.Abs(patternList[a].actualOutput[i] - output[i]);
-                    if (tempAccuracy > 0.49d)
+                    if (tempAccuracy > 0.5d)
                     {
                         error++;
                     }
@@ -471,7 +472,10 @@ namespace ArtificialNeuralNetwork
             //double[] output = new double[patterns[0].actualOutput.Length];// выходные сигналы сигналы нейросети
             double[] inputs = new double[16];
             double[] output = new double[24];
-            net.Eta = 0.01d;
+            //net.Eta = 0.01d;
+
+            System.Diagnostics.Stopwatch sw = new Stopwatch(); // time ---------------------------------
+            sw.Start(); // time ------------------------------------------------------------------------
 
             for (var n = 0; n < patterns.Length; ++n)
             {
@@ -484,7 +488,7 @@ namespace ArtificialNeuralNetwork
                 {
                     tempAccuracy = Math.Abs(patterns[n].actualOutput[i] - output[i]);
                     //temp += tempAccuracy;
-                    if (tempAccuracy > 0.49d)
+                    if (tempAccuracy > 0.50d)
                     {
                         ++error;
                     }
@@ -493,17 +497,31 @@ namespace ArtificialNeuralNetwork
                 if (error != 0)
                 {
                     net.TrainNet(patterns[n].actualInputs, patterns[n].actualOutput);
-                    --n;
-                    // Понижаем скорость обучения сети
-                    if (0.0001 > net.Eta)
-                    {
-                        net.Eta = net.Eta - (net.Eta * 0.1);
-                    }
-                    continue;
+                    //--n;
+                    //// Понижаем скорость обучения сети
+                    //if (0.0001 > net.Eta)
+                    //{
+                    //    net.Eta = net.Eta - (net.Eta * 0.1);
+                    //}
+                    //continue;
                 }
-                net.Eta = 0.01d;
+                //net.Eta = 0.01d;
                 Console.SetCursorPosition(0, Console.CursorTop);
-                Console.Write("Complate " + (n * 100) / (patterns.Length) + " %     " + n + "          ");
+                //Console.Write("Complate " + (n * 100) / (patterns.Length) + " %     " + n + "          ");
+            }
+
+            sw.Stop();// time ----------------------------------------------------------------------------
+            Console.ForegroundColor = ConsoleColor.DarkGreen; // устанавливаем цвет
+            Console.WriteLine(" Iteration completed: {0}", (sw.ElapsedMilliseconds / 1000.0).ToString());
+            Console.ResetColor();
+
+            var errors = cheakNet(_patternList, net);
+            if (errors < net.error)
+            {
+                string str = String.Format("  dif = {0}  current Error = {1} ", net.error - errors, errors);
+                net.error = errors;
+                Console.Write(str);
+                SaveNet(net); //сохраним нейросеть
             }
         }
     }
