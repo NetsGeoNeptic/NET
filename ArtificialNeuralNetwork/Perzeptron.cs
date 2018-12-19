@@ -28,7 +28,7 @@ namespace ArtificialNeuralNetwork
         /** Закрываем конструктор по умолчанию */
         public Perzeptron()
         {
-            // TODO закрытый конструктор 		
+            // TODO закрытый конструктор
         }
 
         /**
@@ -54,7 +54,7 @@ namespace ArtificialNeuralNetwork
          */
         public void ClearChange()
         {
-            extraWeight = rand(-0.025, 0.025);
+            extraWeight = rand(-0.25, 0.25);
             for (int i = 0; i < changeSignal.Length; i++)
             {
                 changeSignal[i] = 0;

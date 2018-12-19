@@ -7,8 +7,10 @@ namespace ArtificialNeuralNetwork
     public class Network
     {
         public double Eta = 0.01d;
-        private double wsMax = 5.6d; // максимальный вес
-        private double wsMin = -5.6d; // минимальный вес
+        private double wsMax = 5.5d; // максимальный вес
+        private double wsMin = -5.5d; // минимальный вес
+
+        public int difference = 0;
 
         // Сумма ответов сети
         //--------------------
@@ -25,7 +27,7 @@ namespace ArtificialNeuralNetwork
         // Слои нейронной сети
         //--------------------
         public Layer[] layers;
-
+        
         // Закрываем конструктор по умолчанию
         //-----------------------------------
         public Network()
@@ -250,7 +252,7 @@ namespace ArtificialNeuralNetwork
                         }
                         //sum = sum + cl[j].extraWeight;//???
                         cl[j].sum = sum;
-                        cl[j].activation = f(cl[j].sum - cl[j].extraWeight);//???
+                        cl[j].activation = f(cl[j].sum);//???
                         continue;
                     }
 
@@ -262,7 +264,7 @@ namespace ArtificialNeuralNetwork
                     }
                     //sum = sum + cl[j].extraWeight;//???
                     cl[j].sum = sum;
-                    cl[j].activation = f(cl[j].sum - cl[j].extraWeight);//???
+                    cl[j].activation = f(cl[j].sum);//???
                 }
             }
         }//end run_net

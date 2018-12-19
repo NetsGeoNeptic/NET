@@ -14,7 +14,7 @@ namespace ArtificialNeuralNetwork
         bool _flag = true;
         private List<Pattern> _patternList = new List<Pattern>();
         private Random randObj;
-        private readonly int[] _layer = { 16, 132, 24 };//каждый элемент это слой, каждое значение количество нейронов 
+        private readonly int[] _layer = { 16, 128, 24 };//каждый элемент это слой, каждое значение количество нейронов 
 
         static void Main(string[] args)
         {
@@ -34,25 +34,79 @@ namespace ArtificialNeuralNetwork
             _neo.error = cheakNet(_patternList, _neo);
             Console.WriteLine("Error = " + _neo.error);
 
+// //------------------------------------------------------------------------------------------------------------------------------------
+//            for (int i = 0; i < 3000; ++i)
+//            {
+//                System.Diagnostics.Stopwatch sw = new Stopwatch(); // time ---------------------------------
+//                sw.Start(); // time ------------------------------------------------------------------------
+//                chooseBest(_patterns, _neo);
+//                sw.Stop();// time ----------------------------------------------------------------------------
+//                Console.ForegroundColor = ConsoleColor.DarkCyan; // устанавливаем цвет
+//                Console.WriteLine(" Iteration completed: {0}", (sw.ElapsedMilliseconds / 1000.0).ToString());
+//                Console.ResetColor();
+//            }
+
+//            System.IO.File.Delete(@"D:\note_best_start.xml");
+//            XmlSerializer formatter = new XmlSerializer(typeof(Network));            
+//            using (System.IO.FileStream fs = new System.IO.FileStream(@"D:\note_best_start.xml", System.IO.FileMode.OpenOrCreate))
+//            {
+//                formatter.Serialize(fs, _neo);
+//                Console.Write(" Объект сериализован\n");
+//            }
+////------------------------------------------------------------------------------------------------------------------------------------
+
+
+
             do
             {
-                //trainNet(_patterns); // тренеровка сети основанная на всех вариантах
                 teachNet(_patterns,_neo); // альтернавивный вариант обучения
-                //Console.WriteLine("Error = " + cheakNet(_patternList, _neo));
             } while (_neo.error != 0);
-
-            //do
-            //{
-            //    teachNet(_patterns, _neo); // тренеровка сети основанная на всех вариантах
-            //    SaveNet(_neo); //сохраним нейросеть
-            //    Console.WriteLine("Error = " + cheakNet(_patternList, _neo));
-            //} while (cheakNet(_patternList, _neo) > 0);
-
-            //TestSpeedMethod();
 
             Console.WriteLine("\n\naccuracy = " + PatternNetAccuracy(_patternList, _neo) + " % ");
             Console.WriteLine("\nPress any key to exit.");
             System.Console.ReadKey();
+        }
+
+        private void chooseBest(Pattern[] patterns, Network net)
+        {
+            double[] inputs = new double[16];
+            double[] output = new double[24];
+            Network mNet = new Network(_layer);
+
+            var startError = 0;
+            startError = cheakNet(_patternList, mNet);
+            var error = 0;
+            for (var n = 0; n < patterns.Length; ++n)
+            {
+                mNet.RunNet(patterns[n].actualInputs);//получаем результат
+                mNet.GetNetAnswer(output);// получаем выходные сигналы сигналы нейросети
+                error = 0;
+                double tempAccuracy = 0;
+
+                for (var i = 0; i < output.Length; ++i)
+                {
+                    tempAccuracy = Math.Abs(patterns[n].actualOutput[i] - output[i]);
+                    if (tempAccuracy > 0.50d)
+                    {
+                        ++error;
+                    }
+                }
+
+                if (error != 0)
+                {
+                    mNet.TrainNet(patterns[n].actualInputs, patterns[n].actualOutput);
+                }
+            }
+
+            var errors = cheakNet(_patternList, mNet);
+            mNet.difference = startError - errors;
+
+            if (mNet.difference > _neo.difference)
+            {
+                _neo = mNet;
+                //_neo.error = errors;
+            }
+            Console.WriteLine("End Choose error difference = " + _neo.difference);
         }
 
         private void TestSpeedMethod()
@@ -196,7 +250,7 @@ namespace ArtificialNeuralNetwork
                 for (int i = 0; i < output.Length; ++i)
                 {
                     double tempAccuracy = Math.Abs(patternList[a].actualOutput[i] - output[i]);
-                    if (tempAccuracy > 0.5d)
+                    if (tempAccuracy > 0.50d)
                     {
                         error++;
                     }
